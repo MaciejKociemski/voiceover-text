@@ -2,7 +2,7 @@ const textarea = document.querySelector("textarea"),
   voiceList = document.querySelector("select"),
   speechBtn = document.querySelector("button");
 
-let synth = speechSynthesis,
+let synth = window.speechSynthesis,
   isSpeaking = false;
 
 textarea.value = `Silent night, holy night,
