@@ -16,3 +16,8 @@ Beneath the vast celestial dome,
 A universe where hearts may roam.
 In poetry of night and day,
 The echoes of our hopes will stay.
+
+Silent night, holy night,
+All is calm, all is bright.
+Round yon Virgin, Mother and Child,
+Holy infant so tender and mild.
