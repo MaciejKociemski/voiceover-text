@@ -2,7 +2,7 @@ const textarea = document.querySelector("textarea"),
   voiceList = document.querySelector("select"),
   speechBtn = document.querySelector("button");
 
-let synth = speechSynthesis,
+let synth = window.speechSynthesis, // Używamy window.speechSynthesis dla kompatybilności z Androidem
   isSpeaking = false;
 
 textarea.value = `Silent night, holy night,
@@ -12,37 +12,51 @@ Holy infant so tender and mild.`;
 
 voices();
 
-function voices() {
-  for (let voice of synth.getVoices()) {
-    let selected = voice.name === "Daniel" ? "selected" : "";
-    let option = `<option value="${voice.name}" ${selected}>${voice.name} (${voice.lang})</option>`;
-    voiceList.insertAdjacentHTML("beforeend", option);
-  }
+async function voices() {
+  return new Promise((resolve) => {
+    let voicesInterval = setInterval(() => {
+      const voices = synth.getVoices();
+      if (voices.length !== 0) {
+        clearInterval(voicesInterval);
+        for (let voice of voices) {
+          let selected = voice.name === "Daniel" ? "selected" : "";
+          let option = `<option value="${voice.name}" ${selected}>${voice.name} (${voice.lang})</option>`;
+          voiceList.insertAdjacentHTML("beforeend", option);
+        }
+        resolve();
+      }
+    }, 500);
+  });
 }
 
 synth.addEventListener("voiceschanged", voices);
 
-function textToSpeech(text) {
-  let utterance = new SpeechSynthesisUtterance(text);
-  for (let voice of synth.getVoices()) {
-    if (voice.name === voiceList.value) {
-      utterance.voice = voice;
+async function textToSpeech(text) {
+  await voices(); // Czekamy, aż głosy zostaną załadowane
+
+  return new Promise((resolve) => {
+    let utterance = new SpeechSynthesisUtterance(text);
+    for (let voice of synth.getVoices()) {
+      if (voice.name === voiceList.value) {
+        utterance.voice = voice;
+      }
     }
-  }
 
-  utterance.addEventListener("end", () => {
-    isSpeaking = false;
-    speechBtn.innerText = "Convert To Speech";
+    utterance.addEventListener("end", () => {
+      isSpeaking = false;
+      speechBtn.innerText = "Convert To Speech";
+      resolve();
+    });
+
+    synth.speak(utterance);
   });
-
-  synth.speak(utterance);
 }
 
-speechBtn.addEventListener("click", (e) => {
+speechBtn.addEventListener("click", async (e) => {
   e.preventDefault();
   if (textarea.value !== "") {
     if (!synth.speaking && !isSpeaking) {
-      textToSpeech(textarea.value);
+      await textToSpeech(textarea.value);
       isSpeaking = true;
       speechBtn.innerText = "Pause Speech";
     } else {
