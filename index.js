@@ -5,7 +5,10 @@ const textarea = document.querySelector("textarea"),
 let synth = speechSynthesis,
   isSpeaking = false;
 
-textarea.value = `Droga pani, bardzo dobry podcast . Na serio, bardzo, ale to bardzo, dobry!.`;
+textarea.value = `Silent night, holy night,
+All is calm, all is bright.
+Round yon Virgin, Mother and Child,
+Holy infant so tender and mild.`;
 
 voices();
 
